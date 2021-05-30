@@ -27,6 +27,7 @@ import com.github._1c_syntax.mdclasses.mdo.MDSubsystem;
 import com.github._1c_syntax.mdclasses.mdo.attributes.AccountingFlag;
 import com.github._1c_syntax.mdclasses.mdo.attributes.Recalculation;
 import com.github._1c_syntax.mdclasses.mdo.attributes.TabularSection;
+import com.github._1c_syntax.mdclasses.mdo.children.XDTOPackageData;
 import com.github._1c_syntax.mdclasses.mdo.children.form.DynamicListExtInfo;
 import com.github._1c_syntax.mdclasses.mdo.children.form.FormData;
 import com.github._1c_syntax.mdclasses.mdo.children.form.FormItem;
@@ -55,11 +56,13 @@ import com.github._1c_syntax.mdclasses.unmarshal.converters.DataSetConverter;
 import com.github._1c_syntax.mdclasses.unmarshal.converters.DesignerFormConverter;
 import com.github._1c_syntax.mdclasses.unmarshal.converters.DesignerFormItemConverter;
 import com.github._1c_syntax.mdclasses.unmarshal.converters.DesignerMDOConverter;
+import com.github._1c_syntax.mdclasses.unmarshal.converters.DesignerXRItemConverter;
 import com.github._1c_syntax.mdclasses.unmarshal.converters.EnumConverter;
 import com.github._1c_syntax.mdclasses.unmarshal.converters.FormEventConverter;
 import com.github._1c_syntax.mdclasses.unmarshal.converters.FormItemConverter;
 import com.github._1c_syntax.mdclasses.unmarshal.converters.PairConverter;
 import com.github._1c_syntax.mdclasses.unmarshal.wrapper.DesignerChildObjects;
+import com.github._1c_syntax.mdclasses.unmarshal.wrapper.DesignerContentItem;
 import com.github._1c_syntax.mdclasses.unmarshal.wrapper.DesignerFormWrapper;
 import com.github._1c_syntax.mdclasses.unmarshal.wrapper.DesignerMDO;
 import com.github._1c_syntax.mdclasses.unmarshal.wrapper.DesignerRootWrapper;
@@ -216,8 +219,10 @@ public class XStreamFactory {
     xStream.processAnnotations(DesignerForm.class);
     xStream.processAnnotations(DesignerFormCommand.class);
     xStream.processAnnotations(DesignerFormCommands.class);
+    xStream.processAnnotations(DesignerContentItem.class);
 
     xStream.alias("Rights", RoleData.class);
+    xStream.alias("package", XDTOPackageData.class);
     xStream.alias("MetaDataObject", DesignerRootWrapper.class);
     xStream.alias("DataCompositionSchema", DataCompositionSchema.class);
 
@@ -226,7 +231,6 @@ public class XStreamFactory {
     registerSubsystemChildrenAliases(xStream);
     registerFormsChildrenAliases(xStream);
     registerSimpleTypeAliases(xStream);
-
   }
 
   private void registerClassesByMetadata(XStream xStream) {
@@ -364,6 +368,7 @@ public class XStreamFactory {
     xStream.registerConverter(new DataSetConverter());
     xStream.registerConverter(new DesignerMDOConverter());
     xStream.registerConverter(new DesignerFormConverter());
+    xStream.registerConverter(new DesignerXRItemConverter());
   }
 
 }

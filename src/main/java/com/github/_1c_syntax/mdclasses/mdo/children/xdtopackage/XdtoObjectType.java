@@ -19,22 +19,39 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with MDClasses.
  */
-package com.github._1c_syntax.mdclasses.mdo.support;
+package com.github._1c_syntax.mdclasses.mdo.children.xdtopackage;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+import com.thoughtworks.xstream.annotations.XStreamImplicit;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * Вспомогательный класс для хранения описания типов объектов XDTO пакета
+ */
 @Data
 @NoArgsConstructor
-public class MDOSynonym {
-  @XStreamAlias("key")
-  private String language;
-  @XStreamAlias("value")
-  private String content;
+public class XdtoObjectType {
 
-  public MDOSynonym(String language, String content) {
-    this.language = language;
-    this.content = content;
-  }
+  /**
+   * Имя типа объекта
+   */
+  @XStreamAsAttribute
+  private String name = "";
+
+  /**
+   * Ссылка на базовый тип
+   */
+  @XStreamAsAttribute
+  private String base = "";
+
+  /**
+   * Список атрибутов объекта
+   */
+  @XStreamImplicit(itemFieldName = "property")
+  private List<XdtoProperty> properties = Collections.emptyList();
+
 }

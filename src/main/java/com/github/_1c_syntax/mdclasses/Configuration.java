@@ -28,10 +28,11 @@ import com.github._1c_syntax.mdclasses.mdo.AbstractMDObjectBase;
 import com.github._1c_syntax.mdclasses.mdo.MDCommonModule;
 import com.github._1c_syntax.mdclasses.mdo.MDConfiguration;
 import com.github._1c_syntax.mdclasses.mdo.MDLanguage;
-import com.github._1c_syntax.mdclasses.mdo.MDRole;
 import com.github._1c_syntax.mdclasses.mdo.MDOHasChildren;
+import com.github._1c_syntax.mdclasses.mdo.MDRole;
 import com.github._1c_syntax.mdclasses.mdo.support.ApplicationRunMode;
 import com.github._1c_syntax.mdclasses.mdo.support.DataLockControlMode;
+import com.github._1c_syntax.mdclasses.mdo.support.LanguageContent;
 import com.github._1c_syntax.mdclasses.mdo.support.MDOModule;
 import com.github._1c_syntax.mdclasses.mdo.support.MDOReference;
 import com.github._1c_syntax.mdclasses.mdo.support.ModuleType;
@@ -134,6 +135,21 @@ public class Configuration {
   private boolean useOrdinaryFormInManagedApplication;
 
   /**
+   * Информация о копирайте на разных языках
+   */
+  private List<LanguageContent> copyrights;
+
+  /**
+   * Детальная информация о конфигурации, на разных языках
+   */
+  private List<LanguageContent> detailedInformation;
+
+  /**
+   * Краткая информация о конфигурации, на разных языках
+   */
+  private List<LanguageContent> briefInformation;
+
+  /**
    * Модули объектов конфигурации в связке со ссылкой на файлы
    */
   private Map<URI, ModuleType> modulesByType;
@@ -190,6 +206,9 @@ public class Configuration {
     languages = Collections.emptyMap();
     modulesByMDORef = Collections.emptyMap();
     roles = Collections.emptyList();
+    copyrights = Collections.emptyList();
+    detailedInformation = Collections.emptyList();
+    briefInformation = Collections.emptyList();
 
     rootPath = null;
     name = "";
@@ -257,6 +276,11 @@ public class Configuration {
 
     useManagedFormInOrdinaryApplication = mdoConfiguration.isUseManagedFormInOrdinaryApplication();
     useOrdinaryFormInManagedApplication = mdoConfiguration.isUseOrdinaryFormInManagedApplication();
+
+    copyrights = mdoConfiguration.getCopyrights();
+
+    briefInformation = mdoConfiguration.getBriefInformation();
+    detailedInformation = mdoConfiguration.getDetailedInformation();
 
     Map<URI, ModuleType> modulesType = new HashMap<>();
     Map<URI, Map<SupportConfiguration, SupportVariant>> modulesSupport = new HashMap<>();

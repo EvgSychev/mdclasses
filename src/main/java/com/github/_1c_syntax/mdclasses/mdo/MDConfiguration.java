@@ -26,9 +26,11 @@ import com.github._1c_syntax.mdclasses.common.ConfigurationSource;
 import com.github._1c_syntax.mdclasses.mdo.metadata.Metadata;
 import com.github._1c_syntax.mdclasses.mdo.support.ConfigurationExtensionPurpose;
 import com.github._1c_syntax.mdclasses.mdo.support.DataLockControlMode;
+import com.github._1c_syntax.mdclasses.mdo.support.LanguageContent;
 import com.github._1c_syntax.mdclasses.mdo.support.MDOType;
 import com.github._1c_syntax.mdclasses.mdo.support.ScriptVariant;
 import com.github._1c_syntax.mdclasses.mdo.support.UseMode;
+import com.github._1c_syntax.mdclasses.unmarshal.wrapper.DesignerContentItem;
 import com.github._1c_syntax.mdclasses.unmarshal.wrapper.DesignerMDO;
 import com.github._1c_syntax.mdclasses.utils.MDOFactory;
 import com.github._1c_syntax.mdclasses.utils.MDOPathUtils;
@@ -43,6 +45,7 @@ import lombok.ToString;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Data
@@ -92,6 +95,24 @@ public class MDConfiguration extends AbstractMDObjectBSL {
    * Использовать управляемые формы в обычном приложении
    */
   private boolean useManagedFormInOrdinaryApplication;
+
+  /**
+   * Информация об авторском праве, на разных языках
+   */
+  @XStreamImplicit(itemFieldName = "copyright")
+  private List<LanguageContent> copyrights = Collections.emptyList();
+
+  /**
+   * Детальная информация о конфигурации, на разных языках
+   */
+  @XStreamImplicit(itemFieldName = "detailedInformation")
+  private List<LanguageContent> detailedInformation = Collections.emptyList();
+
+  /**
+   * Краткая информация о конфигурации, на разных языках
+   */
+  @XStreamImplicit(itemFieldName = "briefInformation")
+  private List<LanguageContent> briefInformation = Collections.emptyList();
 
   /**
    * Использовать обычные формы в управляемом приложении
@@ -154,6 +175,10 @@ public class MDConfiguration extends AbstractMDObjectBSL {
     useManagedFormInOrdinaryApplication = designerProperties.isUseManagedFormInOrdinaryApplication();
     useOrdinaryFormInManagedApplication = designerProperties.isUseOrdinaryFormInManagedApplication();
 
+    copyrights = createLanguageContent(designerProperties.getCopyrights());
+    briefInformation = createLanguageContent(designerProperties.getBriefInformation());
+    detailedInformation = createLanguageContent(designerProperties.getDetailedInformation());
+
     children = designerMDO.getChildObjects().getChildren();
   }
 
@@ -161,8 +186,22 @@ public class MDConfiguration extends AbstractMDObjectBSL {
   public void supplement() {
     super.supplement();
     MDOPathUtils.getRootPathByConfigurationMDO(path).ifPresent(this::computeAllMDObject);
-    linkChildAndSubsystem();
+
+    var localChildren = getAllMDO();
+    linkChildAndSubsystem(localChildren);
+    linkCommonAttributesAndUsing(localChildren);
+
     setDefaultConfigurationLanguage();
+  }
+
+  private static List<LanguageContent> createLanguageContent(List<DesignerContentItem> designerContentItems) {
+    if (designerContentItems.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    return designerContentItems.stream()
+      .map(designerCopyright -> new LanguageContent(designerCopyright.getLanguage(), designerCopyright.getContent()))
+      .collect(Collectors.toList());
   }
 
   private void setDefaultConfigurationLanguage() {
@@ -181,10 +220,11 @@ public class MDConfiguration extends AbstractMDObjectBSL {
 
   private void computeAllMDObject(Path rootPath) {
     var configurationSource = MDOUtils.getConfigurationSourceByMDOPath(path);
-    children =
+    var localChildren =
       children.parallelStream()
         .map(child -> readChildMDO(configurationSource, rootPath, child))
         .collect(Collectors.toList());
+    setChildren(localChildren);
   }
 
   private static Either<String, AbstractMDObjectBase> readChildMDO(ConfigurationSource configurationSource,
@@ -205,19 +245,29 @@ public class MDConfiguration extends AbstractMDObjectBSL {
     return child;
   }
 
-  private void linkChildAndSubsystem() {
-    var localChildren = children.stream()
-      .filter(Either::isRight)
-      .map(Either::get)
-      .collect(Collectors.toMap((AbstractMDObjectBase mdo)
-        -> mdo.getMdoReference().getMdoRef(), (AbstractMDObjectBase mdo) -> mdo));
-
+  private void linkChildAndSubsystem(Map<String, AbstractMDObjectBase> allMDO) {
     children.stream()
       .filter(Either::isRight)
       .map(Either::get)
       .filter((AbstractMDObjectBase mdo) -> mdo.getType() == MDOType.SUBSYSTEM)
       .map(MDSubsystem.class::cast)
-      .forEach(subsystem -> subsystem.linkToChildren(localChildren));
+      .forEach(subsystem -> subsystem.linkToChildren(allMDO));
   }
 
+  private void linkCommonAttributesAndUsing(Map<String, AbstractMDObjectBase> allMDO) {
+    children.stream()
+      .filter(Either::isRight)
+      .map(Either::get)
+      .filter((AbstractMDObjectBase mdo) -> mdo.getType() == MDOType.COMMON_ATTRIBUTE)
+      .map(MDCommonAttribute.class::cast)
+      .forEach(commonAttribute -> commonAttribute.linkUsing(allMDO));
+  }
+
+  private Map<String, AbstractMDObjectBase> getAllMDO() {
+    return children.stream()
+      .filter(Either::isRight)
+      .map(Either::get)
+      .collect(Collectors.toMap((AbstractMDObjectBase mdo)
+        -> mdo.getMdoReference().getMdoRef(), (AbstractMDObjectBase mdo) -> mdo));
+  }
 }

@@ -48,7 +48,7 @@ public class DesignerProperties {
   @XStreamAlias("Name")
   private String name;
   @XStreamAlias("Synonym")
-  private List<DesignerSynonym> synonyms = Collections.emptyList();
+  private List<DesignerContentItem> synonyms = Collections.emptyList();
   @XStreamAlias("Comment")
   private String comment = "";
   @XStreamAlias("ObjectBelonging")
@@ -126,6 +126,14 @@ public class DesignerProperties {
   @XStreamAlias("UseOrdinaryFormInManagedApplication")
   private boolean useOrdinaryFormInManagedApplication;
 
+  @XStreamAlias("Copyright")
+  private List<DesignerContentItem> copyrights = Collections.emptyList();
+
+  @XStreamAlias("BriefInformation")
+  private List<DesignerContentItem> briefInformation = Collections.emptyList();
+  @XStreamAlias("DetailedInformation")
+  private List<DesignerContentItem> detailedInformation = Collections.emptyList();
+
   @XStreamAlias("IncludeInCommandInterface")
   private boolean includeInCommandInterface;
 
@@ -137,4 +145,11 @@ public class DesignerProperties {
   @XStreamAlias("FormType")
   private FormType formType = FormType.ORDINARY;
 
+  @XStreamAlias("Namespace")
+  private String namespace;
+
+  @XStreamAlias("AutoUse")
+  private UseMode autoUse = UseMode.DONT_USE;
+  @XStreamAlias("DataSeparation")
+  private UseMode dataSeparation = UseMode.DONT_USE;
 }

@@ -22,59 +22,35 @@
 package com.github._1c_syntax.mdclasses.unmarshal.converters;
 
 import com.github._1c_syntax.mdclasses.unmarshal.XStreamFactory;
-import com.github._1c_syntax.mdclasses.unmarshal.wrapper.DesignerMDO;
-import com.github._1c_syntax.mdclasses.unmarshal.wrapper.DesignerRootWrapper;
+import com.github._1c_syntax.mdclasses.unmarshal.wrapper.DesignerXRItem;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-
-import java.lang.reflect.Constructor;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Конвертор для объектов в формате конфигуратора, минуя класс враппер
+ * Конвертирует элемент Item в DesignerXRItem (формат конфигуратора), т.к. он может быть как просто строкой,
+ * так и объектом
  */
-@Slf4j
-public class DesignerMDOConverter implements Converter {
-  private final Map<Class<?>, Constructor<?>> constructors = new ConcurrentHashMap<>();
-
+public class DesignerXRItemConverter implements Converter {
   @Override
   public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
-    // no-op
+    // noop
   }
 
-  @SneakyThrows
   @Override
   public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-    reader.moveDown();
-    var nodeName = reader.getNodeName();
-    Class<?> realClass = XStreamFactory.getRealClass(nodeName);
-    if (realClass == null) {
-      throw new IllegalStateException("Unexpected type: " + nodeName);
+    if (reader.hasMoreChildren()) {
+      return context.convertAnother(reader, DesignerXRItem.class,
+        XStreamFactory.getReflectionConverter());
+    } else {
+      return new DesignerXRItem(reader.getValue());
     }
-    var wrapperMDO = (DesignerMDO) context.convertAnother(reader, DesignerMDO.class);
-    wrapperMDO.setMdoPath(XStreamFactory.getCurrentPath(reader));
-    return getConstructor(realClass).newInstance(wrapperMDO);
   }
 
   @Override
   public boolean canConvert(Class type) {
-    return type == DesignerRootWrapper.class;
-  }
-
-  private Constructor<?> getConstructor(Class<?> realClass) {
-    return constructors.computeIfAbsent(realClass,
-      (Class<?> realClazz) -> {
-        try {
-          return realClazz.getDeclaredConstructor(DesignerMDO.class);
-        } catch (NoSuchMethodException e) {
-          throw new IllegalStateException("No constructor found: " + realClass.getCanonicalName());
-        }
-      });
+    return type == DesignerXRItem.class;
   }
 }

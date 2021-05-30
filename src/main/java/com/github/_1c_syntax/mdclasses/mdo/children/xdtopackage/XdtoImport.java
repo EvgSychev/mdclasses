@@ -19,21 +19,21 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with MDClasses.
  */
-package com.github._1c_syntax.mdclasses.unmarshal.wrapper;
+package com.github._1c_syntax.mdclasses.mdo.children.xdtopackage;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-import lombok.Getter;
+import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+/**
+ * Вспомогательный класс для хранения импорта XDTO пакета
+ */
+@Data
 @NoArgsConstructor
-@XStreamAlias("item")
-public class DesignerSynonym {
-
-  @XStreamAlias("lang")
-  private String language = "";
-  @XStreamAlias("content")
-  private String content = "";
+public class XdtoImport {
+  /**
+   * Импортируемое пространство имен
+   */
+  @XStreamAsAttribute
+  private String namespace = "";
 }

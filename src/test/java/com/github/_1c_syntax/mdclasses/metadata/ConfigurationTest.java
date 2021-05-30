@@ -76,6 +76,24 @@ class ConfigurationTest {
     assertThat(configuration.isUseManagedFormInOrdinaryApplication()).isTrue();
     assertThat(configuration.isUseOrdinaryFormInManagedApplication()).isTrue();
 
+    assertThat(configuration.getCopyrights()).hasSize(2)
+      .anyMatch(copyright -> copyright.getContent().equals("Моя Программа")
+        && copyright.getLanguage().equals("ru"))
+      .anyMatch(copyright -> copyright.getContent().equals("My program")
+        && copyright.getLanguage().equals("en"));
+
+    assertThat(configuration.getBriefInformation()).hasSize(2)
+            .anyMatch(briefInfo -> briefInfo.getLanguage().equals("ru")
+                    && briefInfo.getContent().equals("Краткая информация"))
+            .anyMatch(briefInfo -> briefInfo.getLanguage().equals("en")
+                    && briefInfo.getContent().equals("Short info"));
+
+    assertThat(configuration.getDetailedInformation()).hasSize(2)
+            .anyMatch(briefInfo -> briefInfo.getLanguage().equals("ru")
+                    && briefInfo.getContent().equals("Подробная информация"))
+            .anyMatch(briefInfo -> briefInfo.getLanguage().equals("en")
+                    && briefInfo.getContent().equals("Detailed info"));
+
     assertThat(configuration.getModulesByType()).hasSize(38);
     assertThat(configuration.getModulesBySupport()).isEmpty();
     assertThat(configuration.getModulesByObject()).hasSize(38);
@@ -84,12 +102,12 @@ class ConfigurationTest {
     assertThat(configuration.getLanguages()).hasSize(3);
     assertThat(configuration.getRoles()).hasSize(1);
 
-    assertThat(configuration.getChildren()).hasSize(105);
+    assertThat(configuration.getChildren()).hasSize(106);
     checkChildCount(configuration, MDOType.CONFIGURATION, 1);
     checkChildCount(configuration, MDOType.COMMAND, 3);
     checkChildCount(configuration, MDOType.FORM, 7);
     checkChildCount(configuration, MDOType.TEMPLATE, 2);
-    checkChildCount(configuration, MDOType.ATTRIBUTE, 26);
+    checkChildCount(configuration, MDOType.ATTRIBUTE, 27);
     checkChildCount(configuration, MDOType.WS_OPERATION, 2);
     checkChildCount(configuration, MDOType.HTTP_SERVICE_URL_TEMPLATE, 1);
     checkChildCount(configuration, MDOType.HTTP_SERVICE_METHOD, 2);
@@ -319,6 +337,24 @@ class ConfigurationTest {
     assertThat(configuration.isUseOrdinaryFormInManagedApplication()).isFalse();
 
     assertThat(configuration.getModulesByType()).hasSize(18);
+    assertThat(configuration.getCopyrights()).hasSize(2)
+      .anyMatch(copyright -> copyright.getContent().equals("Моя Программа")
+        && copyright.getLanguage().equals("ru"))
+      .anyMatch(copyright -> copyright.getContent().equals("My program")
+        && copyright.getLanguage().equals("en"));
+
+    assertThat(configuration.getBriefInformation()).hasSize(2)
+            .anyMatch(briefInfo -> briefInfo.getLanguage().equals("ru")
+                    && briefInfo.getContent().equals("Краткая информация"))
+            .anyMatch(briefInfo -> briefInfo.getLanguage().equals("en")
+                    && briefInfo.getContent().equals("Short info"));
+
+    assertThat(configuration.getDetailedInformation()).hasSize(2)
+            .anyMatch(briefInfo -> briefInfo.getLanguage().equals("ru")
+                    && briefInfo.getContent().equals("Подробная информация"))
+            .anyMatch(briefInfo -> briefInfo.getLanguage().equals("en")
+                    && briefInfo.getContent().equals("Detailed info"));
+
     assertThat(configuration.getModulesBySupport()).isEmpty();
     assertThat(configuration.getModulesByObject()).hasSize(18);
     assertThat(configuration.getModules()).hasSize(18);
@@ -326,12 +362,12 @@ class ConfigurationTest {
     assertThat(configuration.getLanguages()).hasSize(3);
     assertThat(configuration.getRoles()).hasSize(1);
 
-    assertThat(configuration.getChildren()).hasSize(111);
+    assertThat(configuration.getChildren()).hasSize(112);
     checkChildCount(configuration, MDOType.CONFIGURATION, 1);
     checkChildCount(configuration, MDOType.COMMAND, 1);
     checkChildCount(configuration, MDOType.FORM, 8);
     checkChildCount(configuration, MDOType.TEMPLATE, 2);
-    checkChildCount(configuration, MDOType.ATTRIBUTE, 33);
+    checkChildCount(configuration, MDOType.ATTRIBUTE, 34);
     checkChildCount(configuration, MDOType.WS_OPERATION, 2);
     checkChildCount(configuration, MDOType.HTTP_SERVICE_URL_TEMPLATE, 1);
     checkChildCount(configuration, MDOType.HTTP_SERVICE_METHOD, 2);
