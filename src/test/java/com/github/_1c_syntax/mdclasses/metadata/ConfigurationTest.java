@@ -44,6 +44,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -94,10 +95,10 @@ class ConfigurationTest {
             .anyMatch(briefInfo -> briefInfo.getLanguage().equals("en")
                     && briefInfo.getContent().equals("Detailed info"));
 
-    assertThat(configuration.getModulesByType()).hasSize(38);
+    assertThat(configuration.getModulesByType()).hasSize(39);
     assertThat(configuration.getModulesBySupport()).isEmpty();
-    assertThat(configuration.getModulesByObject()).hasSize(38);
-    assertThat(configuration.getModules()).hasSize(38);
+    assertThat(configuration.getModulesByObject()).hasSize(39);
+    assertThat(configuration.getModules()).hasSize(39);
     assertThat(configuration.getCommonModules()).hasSize(6);
     assertThat(configuration.getLanguages()).hasSize(3);
     assertThat(configuration.getRoles()).hasSize(1);
@@ -172,6 +173,7 @@ class ConfigurationTest {
     modulesByType = configuration.getModulesByMDORef("WSReference.WSСсылка");
     assertThat(modulesByType).isEmpty();
 
+    checkOrderedCommonModules(configuration);
   }
 
   @Test
@@ -336,7 +338,7 @@ class ConfigurationTest {
     assertThat(configuration.isUseManagedFormInOrdinaryApplication()).isTrue();
     assertThat(configuration.isUseOrdinaryFormInManagedApplication()).isFalse();
 
-    assertThat(configuration.getModulesByType()).hasSize(18);
+    assertThat(configuration.getModulesByType()).hasSize(19);
     assertThat(configuration.getCopyrights()).hasSize(2)
       .anyMatch(copyright -> copyright.getContent().equals("Моя Программа")
         && copyright.getLanguage().equals("ru"))
@@ -356,8 +358,8 @@ class ConfigurationTest {
                     && briefInfo.getContent().equals("Detailed info"));
 
     assertThat(configuration.getModulesBySupport()).isEmpty();
-    assertThat(configuration.getModulesByObject()).hasSize(18);
-    assertThat(configuration.getModules()).hasSize(18);
+    assertThat(configuration.getModulesByObject()).hasSize(19);
+    assertThat(configuration.getModules()).hasSize(19);
     assertThat(configuration.getCommonModules()).hasSize(6);
     assertThat(configuration.getLanguages()).hasSize(3);
     assertThat(configuration.getRoles()).hasSize(1);
@@ -436,6 +438,8 @@ class ConfigurationTest {
       .get().getMdoReference());
     assertThat(modulesByType).hasSize(1)
       .containsKey(ModuleType.CommonModule);
+
+    checkOrderedCommonModules(configuration);
   }
 
   @Test
@@ -659,6 +663,21 @@ class ConfigurationTest {
   private void checkChildCount(Configuration configuration, MDOType type, int count) {
     assertThat(configuration.getChildren())
       .filteredOn(mdObjectBase -> mdObjectBase.getType() == type).hasSize(count);
+  }
+
+  private static void checkOrderedCommonModules(Configuration configuration) {
+    var orderedCommonModules = configuration.getOrderedTopMDObjects().get(MDOType.COMMON_MODULE);
+    checkPosition(orderedCommonModules, "ПростойОбщийМодуль", 0);
+    checkPosition(orderedCommonModules, "ГлобальныйОбщийМодуль", 1);
+    checkPosition(orderedCommonModules, "ОбщийМодульВызовСервера", 2);
+    checkPosition(orderedCommonModules, "ОбщийМодульПовтИспВызов", 3);
+    checkPosition(orderedCommonModules, "ОбщийМодульПовтИспСеанс", 4);
+    checkPosition(orderedCommonModules, "ОбщийМодульПолныйеПрава", 5);
+  }
+
+  private static void checkPosition(List<AbstractMDObjectBase> children, String name, int position) {
+    var child = children.get(position);
+    assertThat(child.getName()).isEqualTo(name);
   }
 
 }

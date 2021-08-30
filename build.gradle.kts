@@ -10,7 +10,7 @@ plugins {
     id("io.freefair.lombok") version "6.0.0-m2"
     id("io.freefair.javadoc-links") version "6.0.0-m2"
     id("io.freefair.javadoc-utf-8") version "6.0.0-m2"
-    id("org.sonarqube") version "3.2.0"
+    id("org.sonarqube") version "3.3"
 }
 
 group = "com.github.1c-syntax"
@@ -41,7 +41,7 @@ dependencies {
     implementation("com.github.1c-syntax", "utils", "0.2.1")
 
     // быстрый поиск классов
-    implementation("io.github.classgraph:classgraph:4.8.106")
+    implementation("io.github.classgraph:classgraph:4.8.110")
 
     // тестирование
     testImplementation("org.junit.jupiter", "junit-jupiter-api", junitVersion)
